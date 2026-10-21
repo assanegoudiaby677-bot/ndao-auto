@@ -12,7 +12,7 @@ jobs:
       - name: 1. Récupérer le code
         uses: actions/checkout@v4
 
-      - name: 2. Nettoyer les caractères invisibles de Windows
+      - name: 2. Nettoyer les caractères invisibles
         run: |
           find . -name "*.json" -exec sed -i '1s/^\xEF\xBB\xBF//' {} +
 
@@ -33,14 +33,19 @@ jobs:
       - name: 6. Préparer Android
         run: npx expo prebuild --platform android --no-install
 
-      - name: 7. Permissions Gradle
+      - name: 7. Définir la couleur de l'écran de démarrage
+        run: |
+          mkdir -p android/app/src/main/res/values
+          echo '<resources><color name="splashscreen_background">#07162c</color></resources>' > android/app/src/main/res/values/splashscreen_colors.xml
+
+      - name: 8. Permissions Gradle
         run: chmod +x android/gradlew
 
-      - name: 8. Compiler l'APK physique
+      - name: 9. Compiler l'APK physique
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon
 
-      - name: 9. Mettre à disposition l'APK
+      - name: 10. Mettre à disposition l'APK
         uses: actions/upload-artifact@v4
         with:
           name: NDAO-AUTO-Application
